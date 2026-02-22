@@ -1,0 +1,6 @@
+user_id,timestamp,event_name
+u1,2025-01-01,open
+u1,2025-01-02,click
+u2,2025-01-05,open
+u2,2025-02-10,click
+u3,2025-02-15,open

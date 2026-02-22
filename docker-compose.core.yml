@@ -1,0 +1,65 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    working_dir: /app/services/api
+    command: bash -lc "python manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - .:/app
+      - uploads:/data/uploads
+    ports:
+      - "8000:8000"
+    environment:
+      DJANGO_SETTINGS_MODULE: keelshift_api.settings
+      DB_HOST: keelshift-infra-postgres-1
+      DB_PORT: "5432"
+      DB_NAME: keelshift_db
+      DB_USER: keelshift
+      DB_PASSWORD: example
+      REDIS_URL: redis://keelshift-infra-redis-1:6379/0
+      MINIO_ENDPOINT: http://keelshift-infra-minio-1:9000
+      MINIO_ACCESS_KEY: minioadmin
+      MINIO_SECRET_KEY: miniopass
+      MINIO_BUCKET: keelshift
+      DJANGO_SECRET_KEY: dev-secret-key
+      DJANGO_DEBUG: "1"
+      DJANGO_ALLOWED_HOSTS: "localhost,127.0.0.1,0.0.0.0"
+      UPLOAD_DIR: /data/uploads
+    networks:
+      - infra
+
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    working_dir: /app/services/api
+    command: bash -lc "python rqworker.py"
+    volumes:
+      - .:/app
+      - uploads:/data/uploads
+    environment:
+      DJANGO_SETTINGS_MODULE: keelshift_api.settings
+      DB_HOST: keelshift-infra-postgres-1
+      DB_PORT: "5432"
+      DB_NAME: keelshift_db
+      DB_USER: keelshift
+      DB_PASSWORD: example
+      REDIS_URL: redis://keelshift-infra-redis-1:6379/0
+      MINIO_ENDPOINT: http://keelshift-infra-minio-1:9000
+      MINIO_ACCESS_KEY: minioadmin
+      MINIO_SECRET_KEY: miniopass
+      MINIO_BUCKET: keelshift
+      DJANGO_SECRET_KEY: dev-secret-key
+      DJANGO_DEBUG: "1"
+      DJANGO_ALLOWED_HOSTS: "localhost,127.0.0.1,0.0.0.0"
+      UPLOAD_DIR: /data/uploads
+    networks:
+      - infra
+
+networks:
+  infra:
+    external: true
+    name: keelshift-network
+volumes:
+  uploads:
