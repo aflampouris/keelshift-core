@@ -1,0 +1,30 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Run {{ run.id }}</title>
+  </head>
+  <body>
+    <h1>Run {{ run.id }}</h1>
+
+    <p><b>Status:</b> {{ run.status }}</p>
+    <p><b>Verdict:</b> {{ run.verdict|default:"(pending)" }}</p>
+
+    {% if run.error_message %}
+      <p style="color:red;"><b>Error:</b> {{ run.error_message }}</p>
+    {% endif %}
+
+    {% if run.result_json %}
+      <h2>Metrics</h2>
+      <pre>{{ run.result_json|safe }}</pre>
+    {% endif %}
+
+    {% if pdf_key %}
+      <h2>Report</h2>
+      <p>MinIO object key: <code>{{ pdf_key }}</code></p>
+      <p>(Next step: “Download PDF” via presigned URL.)</p>
+    {% endif %}
+
+    <p><a href="/">Submit another</a></p>
+  </body>
+</html>
