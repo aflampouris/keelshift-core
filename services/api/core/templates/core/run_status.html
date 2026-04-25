@@ -8,21 +8,55 @@
     <h1>Run {{ run.id }}</h1>
 
     <p><b>Status:</b> {{ run.status }}</p>
-    <p><b>Verdict:</b> {{ run.verdict|default:"(pending)" }}</p>
+
+    {% if schema_error %}
+      <p><b>Verdict:</b> INVALID DATASET</p>
+    {% else %}
+      <p><b>Verdict:</b> {{ run.verdict|default:"(pending)" }}</p>
+    {% endif %}
 
     {% if run.error_message %}
       <p style="color:red;"><b>Error:</b> {{ run.error_message }}</p>
     {% endif %}
 
-    {% if run.result_json %}
-      <h2>Metrics</h2>
-      <pre>{{ run.result_json|safe }}</pre>
+    {% if schema_error %}
+      <div style="color: red; font-weight: bold; margin-bottom: 10px;">
+        ⚠ Dataset not valid for analysis<br>
+        {{ schema_error.detail }}
+      </div>
     {% endif %}
 
-    {% if pdf_key %}
+    {% if schema_error %}
+      <div style="margin-top: 10px;">
+        <a href="/runs/{{ run.id }}/map/">
+          <button>Fix columns</button>
+        </a>
+      </div>
+    {% endif %}
+
+    {% if safe_metrics %}
+      <h2>Metrics</h2>
+      <p>
+        Users: {{ safe_metrics.n_users }} |
+        Events: {{ safe_metrics.n_rows }} |
+        Span days: {{ safe_metrics.span_days }}
+      </p>
+    {% endif %}
+
+    {% if checks %}
+      <h2>Checks</h2>
+      <ul>
+        {% for c in checks %}
+          <li>[{{ c.status }}] {{ c.name }}: {{ c.detail }}</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+
+    {% if download_url %}
       <h2>Report</h2>
-      <p>MinIO object key: <code>{{ pdf_key }}</code></p>
-      <p>(Next step: “Download PDF” via presigned URL.)</p>
+      <a href="{{ download_url }}">
+        <button>Download report</button>
+      </a>
     {% endif %}
 
     <p><a href="/">Submit another</a></p>

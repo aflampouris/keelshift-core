@@ -9,8 +9,21 @@ def evaluate_events_fitness(df: pd.DataFrame, *, min_users: int = 50, min_events
     # Required columns
     missing = [c for c in REQUIRED_COLUMNS if c not in df.columns]
     if missing:
-        checks.append({"name": "required_columns", "status": "FAIL", "detail": f"Missing: {missing}"})
-        return {"verdict": "UNFIT", "checks": checks, "metrics": metrics}
+        return {
+            "verdict": "UNFIT",
+            "metrics": {
+                "n_rows": None,
+                "n_users": None,
+                "span_days": None,
+            },
+            "checks": [
+                {
+                    "name": "required_columns",
+                    "status": "FAIL",
+                    "detail": f"Missing: {missing}",
+                }
+            ],
+        }
 
     # Timestamp parse
     ts = pd.to_datetime(df["timestamp"], errors="coerce", utc=True)

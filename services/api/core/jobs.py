@@ -16,12 +16,29 @@ def process_run(run_id: int) -> None:
 
     try:
         df = pd.read_csv(submission.file_path)
+
+        # 🧠 Apply column mapping if it exists
+        mapping = submission.column_mapping or {}
+
+        if mapping:
+            rename_map = {}
+
+            if mapping.get("user_id"):
+                rename_map[mapping["user_id"]] = "user_id"
+            if mapping.get("timestamp"):
+                rename_map[mapping["timestamp"]] = "timestamp"
+            if mapping.get("event_name"):
+                rename_map[mapping["event_name"]] = "event_name"
+
+            df = df.rename(columns=rename_map)
+
         fitness_result = evaluate_events_fitness(df)
         verdict = fitness_result["verdict"]
 
         run.result_json = fitness_result
         run.verdict = verdict
-        run.save(update_fields=["result_json", "verdict"])
+        run.error_message = None  # 👈 CLEAR OLD ERRORS
+        run.save(update_fields=["result_json", "verdict", "error_message"])
 
         pdf_path = render_dummy_pdf(run.id, verdict, fitness_result=fitness_result)
 

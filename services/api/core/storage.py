@@ -24,3 +24,15 @@ def upload_file(bucket: str, object_key: str, file_path: str, content_type: str)
     ensure_bucket(bucket)
     c.fput_object(bucket, object_key, file_path, content_type=content_type)
     return object_key
+
+from datetime import timedelta
+
+def get_presigned_url(object_key: str, expires: int = 3600) -> str:
+    c = _client()
+    bucket = os.environ.get("MINIO_BUCKET", "keelshift")
+
+    return c.presigned_get_object(
+        bucket_name=bucket,
+        object_name=object_key,
+        expires=timedelta(seconds=expires),  # 👈 FIX
+    )

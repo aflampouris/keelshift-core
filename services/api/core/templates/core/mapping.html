@@ -1,0 +1,102 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Map Columns</title>
+
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        max-width: 600px;
+        margin: 40px auto;
+        line-height: 1.5;
+      }
+
+      h1 {
+        margin-bottom: 10px;
+      }
+
+      .field {
+        margin-bottom: 20px;
+      }
+
+      label {
+        display: block;
+        font-weight: bold;
+        margin-bottom: 5px;
+      }
+
+      select {
+        width: 100%;
+        padding: 6px;
+      }
+
+      button {
+        padding: 10px 15px;
+        font-size: 14px;
+        cursor: pointer;
+      }
+
+      .back {
+        margin-top: 20px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <h1>Map your columns</h1>
+    <p>Run {{ run.id }}</p>
+
+    <form method="post" action="/runs/{{ run.id }}/map-submit/">
+      {% csrf_token %}
+
+      <div class="field">
+        <label>User ID</label>
+        <select name="user_id">
+          <option value="">-- select column --</option>
+          {% for c in columns %}
+            <option value="{{ c }}"
+              {% if suggested.user_id == c %}selected{% endif %}
+            >
+              {{ c }}
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="field">
+        <label>Timestamp</label>
+        <select name="timestamp">
+          <option value="">-- select column --</option>
+          {% for c in columns %}
+            <option value="{{ c }}"
+              {% if suggested.timestamp == c %}selected{% endif %}
+            >
+              {{ c }}
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="field">
+        <label>Event Name</label>
+        <select name="event_name">
+          <option value="">-- select column --</option>
+          {% for c in columns %}
+            <option value="{{ c }}"
+              {% if suggested.event_name == c %}selected{% endif %}
+            >
+              {{ c }}
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <button type="submit">Apply Mapping</button>
+    </form>
+
+    <div class="back">
+      <a href="/runs/{{ run.id }}/page/">← Back to run</a>
+    </div>
+  </body>
+</html>

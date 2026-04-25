@@ -16,6 +16,8 @@ class Submission(models.Model):
     # Wedge-specific configuration (e.g. churn_inactive_days)
     config_json = models.JSONField(default=dict, blank=True)
 
+    column_mapping = models.JSONField(null=True, blank=True)
+
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self) -> str:
